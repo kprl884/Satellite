@@ -3,15 +3,26 @@ package com.alpstein.satellite
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.alpstein.satellite.app.detail.DetailScreen
+import com.alpstein.satellite.app.detail.DetailScreenViewModel
+import com.alpstein.satellite.app.list.ListScreen
+import com.alpstein.satellite.app.list.ListScreenViewModel
 import com.alpstein.satellite.ui.theme.SatelliteTheme
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.HiltAndroidApp
 
+@ExperimentalTextApi
+@ExperimentalComposeUiApi
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,25 +32,27 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+                    val navController = rememberNavController()
+                    val detailScreenViewModel: DetailScreenViewModel by viewModels()
+                    val listScreenViewModel: ListScreenViewModel by viewModels()
+
+                    NavHost(navController = navController, startDestination = "list") {
+                        composable("list") {
+                            ListScreen(
+                                listScreenViewModel.uiState,
+                                navigate = {
+                                    navController.navigate(route = "detail")
+                                }
+                            )
+                        }
+                        composable("detail") {
+                            DetailScreen(
+                                detailScreenViewModel.uiState
+                            )
+                        }
+                    }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    SatelliteTheme {
-        Greeting("Android")
     }
 }
