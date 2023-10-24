@@ -3,6 +3,7 @@ package com.alpstein.satellite.app.list
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alpstein.satellite.domain.usecase.ListGetLocalUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class ListScreenViewModel  @Inject constructor(
     private val productListGetUseCaseRemote: ListGetLocalUseCase
 ) : ViewModel() {

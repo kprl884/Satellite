@@ -11,17 +11,36 @@ import kotlinx.coroutines.flow.flowOn
 import org.json.JSONObject
 import java.io.IOException
 
+import javax.inject.Inject
 
-class DataSource(
-
-) : LocalRepository {
-    private val dataSource = R.raw.satellite
+class DataSource @Inject constructor(private val context: Context) : LocalRepository {
 
     override suspend fun getAllItems(): Flow<List<Satellite>> {
         return flow {
             try {
-                val response = dataSource.
-                emit(response)
+                val json = loadJSONFromResources(context, R.raw.satellite)
+                val listData = arrayListOf<Satellite>()
+                if (json != null) {
+                    val jsonObject = JSONObject(json)
+                    val jsonArray = jsonObject.getJSONArray("your_array_name")
+                    for (i in 0 until jsonArray.length()) {
+                        val item = jsonArray.getJSONObject(i)
+                        val id = item.getInt("id")
+                        val active = item.getBoolean("active")
+                        val name = item.getString("name")
+                        val costPerLaunch = item.getInt("cost_per_launch")
+                        val firstFlight = item.getString("first_flight")
+                        val height = item.getInt("height")
+                        val position = item.getJSONArray("position")
+                        val mass = item.optInt("mass", -1)
+                       listData.add(
+                           Satellite(
+                               id, active, name, costPerLaunch, firstFlight, height, mass
+                           )
+                       )
+                    }
+                    emit(listData)
+                }
             }catch (e: Exception){
                 println(e.message)
             }
@@ -41,30 +60,5 @@ class DataSource(
             ex.printStackTrace()
         }
         return json
-    }
-
-    private fun processJSONData(json: String) {
-        try {
-            val jsonObject = JSONObject(json)
-            val jsonArray = jsonObject.getJSONArray("your_array_name")
-            for (i in 0 until jsonArray.length()) {
-                val item = jsonArray.getJSONObject(i)
-                // JSON verilerini alın ve kullanın
-                val id = item.getInt("id")
-                val costPerLaunch = item.getInt("cost_per_launch")
-                val firstFlight = item.getString("first_flight")
-                val height = item.getInt("height")
-                val mass = item.optInt("mass", -1) // Eksik bir anahtar varsa varsayılan bir değer kullanabilirsiniz.
-
-                // JSON verileriyle istediğiniz işlemi gerçekleştirin
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    val json = loadJSONFromResources(this, R.raw.your_json_file)
-    if (json != null) {
-        processJSONData(json)
     }
 }
