@@ -5,4 +5,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface LocalRepository {
     suspend fun getAllItems() : Flow<List<Satellite>>
+
+    suspend fun getItemByItem(id: Int): Flow<Satellite>
 }

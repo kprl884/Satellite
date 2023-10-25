@@ -13,7 +13,7 @@ import java.io.IOException
 
 import javax.inject.Inject
 
-class DataSource @Inject constructor(private val context: Context) : LocalRepository {
+class DataSource @Inject constructor(private val context: Context) :  LocalRepository {
 
     override suspend fun getAllItems(): Flow<List<Satellite>> {
         return flow {
@@ -40,6 +40,31 @@ class DataSource @Inject constructor(private val context: Context) : LocalReposi
                        )
                     }
                     emit(listData)
+                }
+            }catch (e: Exception){
+                println(e.message)
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+    override suspend fun getItemByItem(id: Int): Flow<Satellite> {
+        return flow {
+            try {
+                val json = loadJSONFromResources(context, R.raw.satellite)
+                if (json != null) {
+                    val jsonObject = JSONObject(json)
+                    val jsonArray = jsonObject.getJSONArray("your_array_name")
+                    for (i in 0 until jsonArray.length()) {
+                        val item = jsonArray.getJSONObject(i)
+                        val id = item.getInt("id")
+                        val active = item.getBoolean("active")
+                        val name = item.getString("name")
+                        val costPerLaunch = item.getInt("cost_per_launch")
+                        val firstFlight = item.getString("first_flight")
+                        val height = item.getInt("height")
+                        val position = item.getJSONArray("position")
+                        val mass = item.optInt("mass", -1)
+                    }
+                    emit(Satellite(id = id))
                 }
             }catch (e: Exception){
                 println(e.message)

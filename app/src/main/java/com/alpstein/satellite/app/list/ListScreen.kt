@@ -1,5 +1,6 @@
 package com.alpstein.satellite.app.list
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -25,27 +26,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.alpstein.satellite.domain.entity.Satellite
 import kotlinx.coroutines.flow.StateFlow
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListScreen(
     uiStateFlow: StateFlow<ListScreenUIState>?,
-    navigate: (satellite: Satellite) -> Unit
+    navController: NavController?
 ) {
     var searchQuery by remember { mutableStateOf("") }
-    val satellites = listOf(
-        Satellite(1, false, "Starship-1"),
-        Satellite(2, true, "Dragon-1"),
-        Satellite(3, true, "Starship-3")
-    )
+    val list = uiStateFlow?.value?.satelliteList
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        var text by remember { mutableStateOf("") }
+        var text by remember { mutableStateOf("Search") }
 
         TextField(
             modifier = Modifier
@@ -56,15 +55,25 @@ fun ListScreen(
         )
 
         Spacer(modifier = Modifier.height(16.dp))
-
-        LazyColumn {
-            items(satellites) { satellite ->
-                SatelliteItem(satellite) { }
-                Divider(color = Color.Gray)
+        if (list != null) {
+            if(list.isNotEmpty()){
+                LazyColumn {
+                    items( list) { satellite ->
+                        SatelliteItem(satellite) {
+                            navController?.navigate(
+                                "detail/{detailId}"
+                                    .replace(
+                                        oldValue = "{detailIdId}",
+                                        newValue = "${satellite.id}"
+                                    )
+                            )
+                        }
+                        Divider(color = Color.Gray)
+                    }
+                }
             }
         }
     }
-
 }
 
 @Composable
@@ -103,8 +112,6 @@ fun ListScreenPreview() {
         Satellite(3, true, "Starship-3")
     )
 
-    ListScreen(null) {
-
-    }
+    ListScreen(null, navController = null)
 }
 

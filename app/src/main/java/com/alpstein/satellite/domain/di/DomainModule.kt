@@ -1,6 +1,7 @@
 package com.alpstein.satellite.domain.di
 
 import com.alpstein.satellite.domain.repository.local.LocalRepository
+import com.alpstein.satellite.domain.usecase.GetSatelliteByIdUseCase
 import com.alpstein.satellite.domain.usecase.ListGetLocalUseCase
 import dagger.Module
 import dagger.Provides
@@ -14,9 +15,19 @@ object DomainModule {
     @ViewModelScoped
     @Provides
     fun provideGetShoppingListLocalUseCase(
-        shoppingLocalRepository: LocalRepository
+        localRepository: LocalRepository
     ): ListGetLocalUseCase {
         return ListGetLocalUseCase(
+            localRepository
+        )
+    }
+
+    @ViewModelScoped
+    @Provides
+    fun provideGetSatelliteItemByIdLocalUseCase(
+        shoppingLocalRepository: LocalRepository
+    ): GetSatelliteByIdUseCase {
+        return GetSatelliteByIdUseCase(
             shoppingLocalRepository
         )
     }

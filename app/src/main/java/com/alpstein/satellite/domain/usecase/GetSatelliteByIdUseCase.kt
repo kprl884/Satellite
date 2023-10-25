@@ -4,13 +4,14 @@ import com.alpstein.satellite.domain.entity.Satellite
 import com.alpstein.satellite.domain.repository.local.LocalRepository
 import kotlinx.coroutines.flow.catch
 
-class ListGetLocalUseCase(private val localRepository: LocalRepository) {
+class GetSatelliteByIdUseCase(private val localRepository: LocalRepository) {
     suspend operator fun invoke(
-        onResult: suspend (List<Satellite>) -> Unit
+        id: Int,
+        onResult: suspend (Satellite) -> Unit
     ){
-        return localRepository.getAllItems()
+        return localRepository.getItemByItem(id)
             .catch {
-               println(it.localizedMessage)
+                println(it.localizedMessage)
             }
             .collect{
                 onResult(it)

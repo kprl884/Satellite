@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ListScreenViewModel  @Inject constructor(
-    private val productListGetUseCaseRemote: ListGetLocalUseCase
+    private val listGetUseCase: ListGetLocalUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ListScreenUIState())
     val uiState: StateFlow<ListScreenUIState> = _uiState.asStateFlow()
@@ -25,7 +25,7 @@ class ListScreenViewModel  @Inject constructor(
 
     private fun fillListEmpty() {
         viewModelScope.launch(Dispatchers.IO) {
-            productListGetUseCaseRemote.invoke { dataList ->
+            listGetUseCase.invoke { dataList ->
                 _uiState.update { currentState ->
                     currentState.copy(
                         isListLoading = false,

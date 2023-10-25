@@ -19,9 +19,9 @@ import com.alpstein.satellite.app.list.ListScreen
 import com.alpstein.satellite.app.list.ListScreenViewModel
 import com.alpstein.satellite.ui.theme.SatelliteTheme
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.HiltAndroidApp
 
 @ExperimentalTextApi
+@AndroidEntryPoint
 @ExperimentalComposeUiApi
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,15 +40,16 @@ class MainActivity : ComponentActivity() {
                         composable("list") {
                             ListScreen(
                                 listScreenViewModel.uiState,
-                                navigate = {
-                                    navController.navigate(route = "detail")
-                                }
+                                navController
                             )
                         }
-                        composable("detail") {
-                            DetailScreen(
-                                detailScreenViewModel.uiState
-                            )
+                        composable("detail/{detailId}") { navBackStackEntry ->
+                            val detailId = navBackStackEntry.arguments?.getString("detailId")
+                            detailId?.let {
+                                DetailScreen(
+                                    detailScreenViewModel.getDetailSatellite(id = it.toInt())
+                                )
+                            }
                         }
                     }
                 }

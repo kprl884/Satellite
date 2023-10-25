@@ -1,4 +1,5 @@
 package com.alpstein.satellite.app.detail
 
-class DetailScreenUIState {
-}
+import com.alpstein.satellite.domain.entity.Satellite
+
+data class DetailScreenUIState(val satellite: Satellite? = null)
